@@ -42,6 +42,9 @@ urlpatterns = [
             checkout_views.checkout_finalize_view,
             name='stripe-checkout-end'
             ),
+    path("services/", landing_views.services_page_view, name='services'),
+    path("contact/", landing_views.contact_page_view, name='contact'),
+    path("pricing-page/", landing_views.pricing_page_view, name='marketing_pricing'),
     path("pricing/", subscriptions_views.subscription_price_view, name='pricing'),
     path("pricing/<str:interval>/", subscriptions_views.subscription_price_view, name='pricing_interval'),
     path("about/", about_view),

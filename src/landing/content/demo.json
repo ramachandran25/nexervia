@@ -1,0 +1,14 @@
+{
+  "brand": {
+    "name": "demo"
+  },
+  "home": {
+    "hero": {
+      "title": "Demo payments platform for modern teams",
+      "subtitle": "Everything in one tenant workspace with secure schema isolation."
+    }
+  },
+  "contact": {
+    "email": "demo-support@example.com"
+  }
+}

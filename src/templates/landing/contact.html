@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block head_title %}Contact - {{ block.super }}{% endblock head_title %}
+{% block content %}
+<section class="bg-white dark:bg-gray-900">
+  <div class="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
+      <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">{{ site_content.contact.title|default:'Contact us' }}</h2>
+      <p class="mb-8 lg:mb-16 font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl">{{ site_content.contact.subtitle|default:'We are ready to help your tenant onboard quickly.' }}</p>
+      <div class="text-center">
+        <p class="text-lg text-gray-700 dark:text-gray-300">{{ site_content.contact.email|default:'support@example.com' }}</p>
+        <p class="text-lg text-gray-700 dark:text-gray-300">{{ site_content.contact.phone|default:'+1 000 000 0000' }}</p>
+      </div>
+  </div>
+</section>
+{% endblock content %}

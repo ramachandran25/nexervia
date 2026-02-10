@@ -1,0 +1,68 @@
+{
+  "brand": {
+    "name": "SaaS"
+  },
+  "home": {
+    "hero": {
+      "title": "Payments tool for software companies",
+      "subtitle": "From checkout to global sales tax compliance, companies around the world use Flowbite to simplify their payment stack.",
+      "primary_cta": {
+        "label": "Get started",
+        "href": "/accounts/signup/"
+      },
+      "secondary_cta": {
+        "label": "Speak to Sales",
+        "href": "/contact/"
+      }
+    }
+  },
+  "services": {
+    "title": "Designed for business teams like yours",
+    "subtitle": "Launch faster with tenant-aware workflows and reusable building blocks.",
+    "items": [
+      {
+        "title": "Marketing",
+        "description": "Plan it, create it, launch it. Collaborate with your whole organization."
+      },
+      {
+        "title": "Legal",
+        "description": "Protect your organization with structured approvals and permissions."
+      },
+      {
+        "title": "Business Automation",
+        "description": "Auto-assign tasks and SLA reminders so no lead gets missed."
+      }
+    ]
+  },
+  "pricing": {
+    "title": "Simple pricing",
+    "subtitle": "Keep one design system, personalize content per tenant.",
+    "plans": [
+      {
+        "name": "Starter",
+        "description": "Best for new teams",
+        "price": "$19/mo"
+      },
+      {
+        "name": "Growth",
+        "description": "For scaling teams",
+        "price": "$79/mo"
+      },
+      {
+        "name": "Enterprise",
+        "description": "Advanced security and support",
+        "price": "Custom"
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "Questions about onboarding your subdomain?",
+    "email": "support@example.com",
+    "phone": "+1 000 000 0000"
+  },
+  "metrics": {
+    "page_views_label": "page views",
+    "social_views_label": "social views"
+  }
+}
