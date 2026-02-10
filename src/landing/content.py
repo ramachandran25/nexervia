@@ -7,6 +7,15 @@ PUBLIC_SUBDOMAINS = {None, "", "www", "localhost", "desalsa", "127", "127.0.0.1"
 
 CONTENT_DIR = Path(__file__).resolve().parent / "content"
 
+STATIC_IMAGE_DIR = Path(__file__).resolve().parent.parent / "staticfiles" / "images"
+DEFAULT_HERO_IMAGE = "images/flowbite-phone-mockup.png"
+HERO_IMAGE_CANDIDATES = (
+    "hero.png",
+    "hero.jpg",
+    "hero.jpeg",
+    "hero.webp",
+    "hero.svg",
+)
 
 def _normalize_subdomain(value):
     if value is None:
@@ -59,3 +68,22 @@ def get_site_content_for_subdomain(subdomain=None):
 def get_site_content_for_request(request):
     subdomain = get_request_subdomain(request)
     return get_site_content_for_subdomain(subdomain=subdomain)
+
+
+def get_hero_image_for_subdomain(subdomain=None):
+    normalized_subdomain = _normalize_subdomain(subdomain)
+    if normalized_subdomain in PUBLIC_SUBDOMAINS:
+        return DEFAULT_HERO_IMAGE
+
+    tenant_image_dir = STATIC_IMAGE_DIR / "tenants" / normalized_subdomain
+
+    for candidate in HERO_IMAGE_CANDIDATES:
+        if (tenant_image_dir / candidate).exists():
+            return f"images/tenants/{normalized_subdomain}/{candidate}"
+
+    return DEFAULT_HERO_IMAGE
+
+
+def get_hero_image_for_request(request):
+    subdomain = get_request_subdomain(request)
+    return get_hero_image_for_subdomain(subdomain=subdomain)

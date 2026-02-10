@@ -6,12 +6,14 @@ from visits.models import PageVisit
 from decouple import config
 from helpers.db import use_dynamic_database_url
 
-from .content import get_site_content_for_request
+
+from .content import get_hero_image_for_request, get_site_content_for_request
 
 
 def _marketing_context(request, extra=None):
     context = {
-        "site_content": get_site_content_for_request(request)
+        "site_content": get_site_content_for_request(request),
+        "hero_image_src": get_hero_image_for_request(request),
     }
     if extra:
         context.update(extra)
