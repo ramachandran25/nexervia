@@ -27,6 +27,7 @@ class Tenant(models.Model):
             validate_blocked_subdomains
         ]
     )
+    tenant_name = models.CharField(max_length=120, unique=True, blank=True, null=True, db_index=True)
     schema_name = models.CharField(max_length=60, unique=True, blank=True, null=True, db_index=True)
     active = models.BooleanField(default=True)
     active_at = models.DateTimeField(null=True, blank=True)
