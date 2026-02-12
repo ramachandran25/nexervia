@@ -1,0 +1,29 @@
+{% extends "account/logout.html" %}
+{% load i18n %}
+{% load allauth_ui %}
+
+{% block content %}
+    {% trans "Sign Out" as heading %}
+    {% trans "Are you sure you want to sign out?" as subheading %}
+    {% url 'account_logout' as action_url %}
+
+    {% #container heading=heading subheading=subheading %}
+
+        <form method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            {{ redirect_field }}
+
+            <div class="mt-6 flex items-center gap-4">
+                <button type="submit"
+                    class="inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">
+                    {% trans "Sign Out" %}
+                </button>
+
+                <a href="javascript:history.back()"
+                    class="block px-4 py-3 text-white bg-blue-600 rounded-lg active ">
+                    {% trans "Cancel" %}
+                </a>
+            </div>
+        </form>
+    {% /container %}
+{% endblock content %}

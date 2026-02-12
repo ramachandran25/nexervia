@@ -58,7 +58,8 @@ if DEBUG:
     ALLOWED_HOSTS += [
         "127.0.0.1",
         ".localhost",
-        '.desalsa.io'
+        '.desalsa.io',
+        'mirna-nonperturbing-viviparously.ngrok-free.dev'
     ]
 
 
