@@ -57,7 +57,7 @@ RUN python manage.py collectstatic --noinput
 # whitenoise -> s3
 
 # set the Django default project name
-ARG PROJ_NAME="cfehome"
+ARG PROJ_NAME="nexervia"
 
 # create a bash script to run the Django project
 # this script will execute at runtime when
