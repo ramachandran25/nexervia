@@ -35,6 +35,7 @@ _INSTALLED_APPS = _CUSTOMER_INSTALLED_APPS + [
     "subscriptions",
     "tenants",
     "visits",
+    "schemadata",
 ]
 
 _INSTALLED_APPS = list(set(_INSTALLED_APPS))

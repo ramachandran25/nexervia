@@ -27,3 +27,10 @@ def validate_subdomain(value):
             f"'{value}' is not a valid subdomain. Subdomains must start and end with an alphanumeric character and can only contain alphanumeric characters and hyphens in between.",
             params={'value': value},
         )
+
+def validate_tla(value):
+    if not re.match(r"^[A-Z]{3}$", value or ""):
+        raise ValidationError(
+            f"'{value}' is not a valid TLA. Value must be exactly 3 uppercase letters.",
+            params={'value': value},
+        )
