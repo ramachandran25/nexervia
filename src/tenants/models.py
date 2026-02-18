@@ -2,24 +2,25 @@ import uuid
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.core.management import call_command
 
 from helpers.db.validators import (
     validate_subdomain,
-    validate_blocked_subdomains,
-    validate_tla,
+    validate_blocked_subdomains
+
 )
 from . import tasks, utils
 
-User = settings.AUTH_USER_MODEL  # auth.User
+User = settings.AUTH_USER_MODEL # auth.User
 
-
+# Create your models here.
 class Tenant(models.Model):
+    # 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, db_index=True, editable=False)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    tla = models.CharField(max_length=3, unique=True, db_index=True, validators=[validate_tla], null=True, blank=True)
     subdomain = models.CharField(
-        max_length=60,
-        unique=True,
+        max_length=60, 
+        unique=True, 
         db_index=True,
         validators=[
             validate_subdomain,
@@ -39,8 +40,6 @@ class Tenant(models.Model):
         if not self.pk:
             created = True
         now = timezone.now()
-        if self.tla:
-            self.tla = self.tla.upper()
         if self.active and not self.active_at:
             self.active_at = now
             self.inactive_at = None
@@ -50,7 +49,5 @@ class Tenant(models.Model):
         if not self.schema_name:
             self.schema_name = utils.generate_unique_schema_name(self.id)
         super().save(*args, **kwargs)
+        # call_command("migrate_schema")
         tasks.migrate_tenant_task(self.id, branch=created)
-
-    def __str__(self):
-        return f"{self.tenant_name or self.subdomain} ({self.tla})"

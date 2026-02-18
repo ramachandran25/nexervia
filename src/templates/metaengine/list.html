@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load meta_filters %}
+
+{% block content %}
+
+<h2>{{ table.label }} List</h2>
+
+
+<style>
+.meta-container {
+    padding: 20px;
+}
+
+.meta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.meta-title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.meta-button {
+    background-color: #1f6feb;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.meta-button:hover {
+    background-color: #1158c7;
+}
+
+.meta-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.meta-table thead {
+    background-color: #f4f6f8;
+}
+
+.meta-table th {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 2px solid #d0d7de;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.meta-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.meta-table tbody tr:hover {
+    background-color: #f9fbfd;
+}
+
+.meta-link {
+    color: #1f6feb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.meta-link:hover {
+    text-decoration: underline;
+}
+</style>
+<div class="meta-container">
+
+    <div class="meta-header">
+        <div class="meta-title">
+            {{ table.label }} List
+        </div>
+
+        <a href="/{{ table.name }}/create/" class="meta-button">
+            Create New
+        </a>
+    </div>
+
+    <table class="meta-table">
+        <thead>
+            <tr>
+                <th>Number</th>
+                {% for field in fields %}
+                    <th>{{ field.label }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for record in records %}
+            <tr>
+
+                <td>
+                    <a href="/{{ table.name }}/{{ record.sys_id }}/" class="meta-link">
+                        {{ record.number }}
+                    </a>
+                </td>
+
+                {% for field in fields %}
+                    <td>
+                        {% with value=record.data|get_item:field.name %}
+                            {{ field|get_choice_label:value }}
+                        {% endwith %}
+                    </td>
+                {% endfor %}
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="20">No records found.</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

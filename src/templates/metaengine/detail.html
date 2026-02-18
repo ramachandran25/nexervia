@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load meta_filters %}
+{% block content %}
+
+<style>
+.meta-container {
+    padding: 20px;
+}
+
+.meta-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.meta-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.meta-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.meta-field label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+.meta-value {
+    padding: 8px;
+    border: 1px solid #eee;
+    background-color: #fafafa;
+    border-radius: 4px;
+}
+
+.meta-actions {
+    margin-top: 20px;
+}
+
+.meta-link {
+    text-decoration: none;
+    color: #1f6feb;
+}
+</style>
+
+<div class="meta-container">
+
+    <div class="meta-title">
+        {{ table.label }} - {{ record.number }}
+    </div>
+
+    <div class="meta-detail">
+
+        {% for field in fields %}
+        <div class="meta-field">
+            <label>{{ field.label }}</label>
+            <div class="meta-value">
+                {% if field.is_core %}
+                    {{ record|get_item:field.name }}
+                {% else %}
+                    {{ record.data|get_item:field.name }}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div class="meta-actions">
+        <a href="/{{ table.name }}/list/" class="meta-link">
+            Back to List
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

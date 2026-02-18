@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load meta_filters %}
+
+{% block content %}
+
+<style>
+.meta-container {
+    padding: 20px;
+    max-width: 900px;
+}
+
+.meta-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.meta-form-group {
+    margin-bottom: 18px;
+}
+
+.meta-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.meta-input,
+.meta-select,
+.meta-textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.meta-button {
+    background-color: #1f6feb;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+</style>
+
+<div class="meta-container">
+
+    {% if record %}
+        <div class="meta-title">{{ record.number }}</div>
+    {% else %}
+        <div class="meta-title">Create {{ table.label }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% for field in fields %}
+            {% if field.name != "active" %}
+            <div class="meta-form-group">
+
+                <label class="meta-label">
+                    {{ field.label }}
+                </label>
+
+                {% if field.field_type == "choice" %}
+                    <select name="{{ field.name }}" class="meta-select">
+                        <option value="">-- Select --</option>
+                        {% for choice in field.choices.all %}
+                            <option value="{{ choice.value }}"
+                                {% if record and record.data|get_item:field.name == choice.value %}
+                                    selected
+                                {% endif %}>
+                                {{ choice.label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                {% elif field.field_type == "text" %}
+                    <textarea name="{{ field.name }}" class="meta-textarea">
+                        {% if record %}{{ record.data|get_item:field.name }}{% endif %}
+                    </textarea>
+
+                {% else %}
+                    <input type="text"
+                        name="{{ field.name }}"
+                        value="{% if record %}{{ record.data|get_item:field.name }}{% endif %}"
+                        class="meta-input">
+                {% endif %}
+            {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="meta-button">
+            {% if record %}
+                Update
+            {% else %}
+                Create
+            {% endif %}
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
