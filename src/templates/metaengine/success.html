@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Record Created Successfully</h2>
+
+<p><strong>Number:</strong> {{ record.number }}</p>
+<p><strong>Sys ID:</strong> {{ record.sys_id }}</p>
+
+<br>
+<a href="/{{ table.name }}/list/">Go to List</a>
+
+{% endblock %}

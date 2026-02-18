@@ -16,6 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
+from metaengine.views import create_record_ui
+from metaengine.views import list_record_ui
+from metaengine.views import detail_record_ui
+from django.urls import path, include
 from auth import views as auth_views
 from checkouts import views as checkout_views
 from landing import views as landing_views
@@ -59,4 +64,7 @@ urlpatterns = [
     path('profiles/', include('profiles.urls')),
     path('tenants/', include('tenants.urls')),
     path("admin/", admin.site.urls),
+    path("<str:table_name>/create/", create_record_ui, name="record_create"),
+    path("<str:table_name>/list/", list_record_ui, name="record_list"),
+    path("<str:table_name>/<uuid:sys_id>/", detail_record_ui, name="record_detail"),
 ]

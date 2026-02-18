@@ -7,6 +7,7 @@ from django.db.models.signals import post_save
 from django.conf import settings 
 from django.urls import reverse
 from django.utils import timezone
+from platformcore.models import Module
 
 User = settings.AUTH_USER_MODEL # "auth.User"
 
@@ -39,6 +40,14 @@ class Subscription(models.Model):
     updated = models.DateTimeField(auto_now=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     features = models.TextField(help_text="Features for pricing, seperated by new line", blank=True, null=True)
+
+    module = models.ForeignKey(
+        Module,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+    provisioned = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name}"

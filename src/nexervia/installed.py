@@ -15,6 +15,10 @@ DEFAULT_APPS = [
     'django_hosts',
     'slippers',
     "widget_tweaks",
+    # platform engine
+    "metaengine",
+    "platformcore",  
+    'rest_framework',
 ]
 
 # tenant/enterpise apps
@@ -35,7 +39,6 @@ _INSTALLED_APPS = _CUSTOMER_INSTALLED_APPS + [
     "subscriptions",
     "tenants",
     "visits",
-    "schemadata",
 ]
 
 _INSTALLED_APPS = list(set(_INSTALLED_APPS))
