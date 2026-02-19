@@ -565,7 +565,7 @@ def menu():
         elif choice == "13": revert_last_merge()
         elif choice == "14": undo_last_promotion()
         elif choice == "15": show_lifecycle_notes()
-        elif choice == "16": break
+        elif choice == "16": startup_flow()
 
 
         else: print("Invalid option.")
