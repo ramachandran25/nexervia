@@ -19,6 +19,8 @@ DEFAULT_APPS = [
     "metaengine",
     "platformcore",  
     'rest_framework',
+    "corsheaders",
+    "api",
 ]
 
 # tenant/enterpise apps

@@ -24,6 +24,11 @@ from django.urls import path, include
 from auth import views as auth_views
 from checkouts import views as checkout_views
 from landing import views as landing_views
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+from api.auth_serializers import CustomTokenSerializer
 from subscriptions import views as subscriptions_views
 from .views import (
     home_view, 
@@ -32,6 +37,8 @@ from .views import (
     user_only_view,
     staff_only_view
 )
+class CustomTokenView(TokenObtainPairView):
+    serializer_class = CustomTokenSerializer
 
 urlpatterns = [
     path("", landing_views.landing_dashboard_page_view, name='home'),
@@ -64,7 +71,10 @@ urlpatterns = [
     path('profiles/', include('profiles.urls')),
     path('tenants/', include('tenants.urls')),
     path("admin/", admin.site.urls),
+    path("api/", include("api.urls")),
     path("<str:table_name>/create/", create_record_ui, name="record_create"),
     path("<str:table_name>/list/", list_record_ui, name="record_list"),
     path("<str:table_name>/<uuid:sys_id>/", detail_record_ui, name="record_detail"),
+    path("api/token/", CustomTokenView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
