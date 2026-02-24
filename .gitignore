@@ -215,3 +215,30 @@ venv/
 .env
 db.sqlite3
 *.log
+
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Django
+db.sqlite3
+*.log
+
+# Virtual env
+venv/
+.env
+
+# Node
+node_modules/
+node_modules/.vite/
+dist/
+build/
+
+# Vite cache
+.vite/
+
+# OS
+.DS_Store
