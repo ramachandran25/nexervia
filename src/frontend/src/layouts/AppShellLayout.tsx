@@ -1,12 +1,14 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { portalModules } from "../core/config/portalConfig";
+import { useEffect, useState } from "react";
 import { useAuth } from "../core/auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { detectTenant } from "../core/tenant/tenant";
+import { getPortalBootstrap } from "../services/portal";
 
 interface Props {
   portal: "support" | "businessAdmin";
 }
+
 
 export default function AppShellLayout({ portal }: Props) {
   const { user, logout } = useAuth();
@@ -16,7 +18,22 @@ export default function AppShellLayout({ portal }: Props) {
   const [viewMode, setViewMode] = useState<"all" | "favorites">("all");
   const navigate = useNavigate();
 
-  const modules = portalModules[portal];
+  const [modules, setModules] = useState<{ name: string; path: string }[]>([]);
+  const [portalLabel, setPortalLabel] = useState("RK Projects");
+  const tenant = detectTenant();
+
+  useEffect(() => {
+    const portalKey = portal === "businessAdmin" ? "admin" : portal;
+    getPortalBootstrap(tenant.subdomain)
+      .then((data) => {
+        setModules(data.portals[portalKey].modules);
+        setPortalLabel(data.branding.company_name);
+      })
+      .catch(() => {
+        setModules([]);
+      });
+  }, [portal, tenant.subdomain]);
+
 
   const pathParts = location.pathname.split("/");
   const moduleKey = pathParts[2];
@@ -48,7 +65,7 @@ export default function AppShellLayout({ portal }: Props) {
       <div className="h-[64px] bg-white border-b flex items-center justify-between px-8 shadow-sm">
 
         <div className="font-semibold text-lg">
-          RK Projects
+          {portalLabel}
         </div>
 
         <div className="text-lg font-medium">

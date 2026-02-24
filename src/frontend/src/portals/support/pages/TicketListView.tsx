@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import api from "../../../services/api";
 
 interface Ticket {
   id: string;
@@ -8,18 +9,39 @@ interface Ticket {
   priority: string;
 }
 
-const dummyTickets: Ticket[] = [
-  { id: "1023", title: "Login issue", status: "Open", priority: "High" },
-  { id: "1024", title: "Payment failure", status: "In Progress", priority: "Medium" },
-  { id: "1025", title: "API error 500", status: "Open", priority: "High" },
-];
+const DEFAULT_TABLES = ["support_tickets", "tickets"];
+
 
 export default function TicketListView() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("id");
+  const [tickets, setTickets] = useState<Ticket[]>([]);
 
-  const filtered = dummyTickets
+  useEffect(() => {
+    const loadTickets = async () => {
+      for (const tableName of DEFAULT_TABLES) {
+        try {
+          const response = await api.get(`/data/${tableName}/`);
+          const mapped = (response.data || []).map((row: any) => ({
+            id: String(row.id || row.number || row.sys_id || ""),
+            title: row.title || row.short_description || "Untitled",
+            status: row.status || "Open",
+            priority: row.priority || "Medium",
+          }));
+          setTickets(mapped);
+          return;
+        } catch (error) {
+          continue;
+        }
+      }
+      setTickets([]);
+    };
+
+    loadTickets();
+  }, []);
+
+  const filtered = tickets
     .filter((t) =>
       t.title.toLowerCase().includes(search.toLowerCase())
     )

@@ -5,8 +5,6 @@ import ConfirmModal from "../../../shared/components/ConfirmModal";
 import { detectTenant } from "../../../core/tenant/tenant";
 
 
-
-
 export default function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();

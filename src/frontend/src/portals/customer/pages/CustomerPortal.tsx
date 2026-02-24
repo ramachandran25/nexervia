@@ -1,7 +1,36 @@
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../core/auth/AuthContext";
+import api from "../../../services/api";
+
+type Ticket = { id: string; title: string; status: string };
 
 export default function CustomerPortal() {
   const { user } = useAuth();
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+
+  useEffect(() => {
+    api
+      .get("/data/tickets/")
+      .then((response) => {
+        const rows = (response.data || []).map((row: any) => ({
+          id: String(row.id || row.number || row.sys_id || ""),
+          title: row.title || row.short_description || "Untitled",
+          status: row.status || "Open",
+        }));
+        setTickets(rows);
+      })
+      .catch(() => setTickets([]));
+  }, []);
+
+  const openTickets = useMemo(
+    () => tickets.filter((ticket) => !["resolved", "closed"].includes(ticket.status.toLowerCase())).length,
+    [tickets]
+  );
+
+  const resolvedTickets = useMemo(
+    () => tickets.filter((ticket) => ["resolved", "closed"].includes(ticket.status.toLowerCase())).length,
+    [tickets]
+  );
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -21,12 +50,12 @@ export default function CustomerPortal() {
 
         <div className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition">
           <p className="text-sm text-gray-500">Open Tickets</p>
-          <h2 className="text-3xl font-bold mt-2">3</h2>
+          <h2 className="text-3xl font-bold mt-2">{openTickets}</h2>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition">
           <p className="text-sm text-gray-500">Resolved</p>
-          <h2 className="text-3xl font-bold mt-2">12</h2>
+          <h2 className="text-3xl font-bold mt-2">{resolvedTickets}</h2>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition">
@@ -75,30 +104,21 @@ export default function CustomerPortal() {
         </h2>
 
         <div className="space-y-4">
-
-          <div className="flex justify-between items-center p-5 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
-            <div>
-              <p className="font-medium">Ticket #1023</p>
-              <p className="text-sm text-gray-500">
-                Issue with login credentials
-              </p>
+          {tickets.slice(0, 5).map((ticket) => (
+            <div key={ticket.id} className="flex justify-between items-center p-5 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
+              <div>
+                <p className="font-medium">Ticket #{ticket.id}</p>
+                <p className="text-sm text-gray-500">{ticket.title}</p>
+              </div>
+              <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
+                {ticket.status}
+              </span>
             </div>
-            <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
-              Resolved
-            </span>
-          </div>
+          ))}
 
-          <div className="flex justify-between items-center p-5 rounded-xl bg-gray-50 hover:bg-gray-100 transition">
-            <div>
-              <p className="font-medium">Ticket #1028</p>
-              <p className="text-sm text-gray-500">
-                Payment processing delay
-              </p>
-            </div>
-            <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
-              In Progress
-            </span>
-          </div>
+          {tickets.length === 0 && (
+            <p className="text-sm text-gray-500">No ticket activity yet.</p>
+          )}
 
         </div>
       </div>
