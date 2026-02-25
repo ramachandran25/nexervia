@@ -6,10 +6,27 @@ export interface PortalModule {
   path: string;
 }
 
+export interface PortalFilter {
+  name: string;
+  path: string;
+}
+
+export interface PortalTableNode {
+  name: string;
+  table: string | null;
+  filters: PortalFilter[];
+}
+
+export interface PortalModuleGroup {
+  name: string;
+  tables: PortalTableNode[];
+}
+
 export interface PortalDefinition {
   label: string;
   path: string;
   modules: PortalModule[];
+  module_groups: PortalModuleGroup[];
 }
 
 export interface PortalBootstrap {
