@@ -16,6 +16,8 @@ from .installed import (
     _INSTALLED_APPS
 )
 
+from datetime import timedelta
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -84,10 +86,16 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://.*\.localhost:5173$",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://*.localhost:5173",
+]
 
 DEFAULT_HOST = "www"
 PARENT_HOST = "localhost:8000"
@@ -212,7 +220,6 @@ AUTHENTICATION_BACKENDS = [
     # ...
 ]
 
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -222,6 +229,10 @@ REST_FRAMEWORK = {
     ),
 }
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
 
 SOCIALACCOUNT_PROVIDERS = {
     "github": {

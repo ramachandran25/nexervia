@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../core/auth/AuthContext";
+import { useAuth } from "@/core/auth/useAuth";
 import ConfirmModal from "../../../shared/components/ConfirmModal";
 import { detectTenant } from "../../../core/tenant/tenant";
 

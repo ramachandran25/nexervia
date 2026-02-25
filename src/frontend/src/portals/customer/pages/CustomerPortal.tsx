@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "../../../core/auth/AuthContext";
+import { useAuth } from "@/core/auth/useAuth";
 import api from "../../../services/api";
 
 type Ticket = { id: string; title: string; status: string };

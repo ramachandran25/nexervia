@@ -1,5 +1,6 @@
 import api from "./api";
 
+
 export interface PortalModule {
   name: string;
   path: string;
@@ -43,6 +44,6 @@ export interface PortalBootstrap {
 
 export async function getPortalBootstrap(subdomain?: string) {
   const query = subdomain ? `?subdomain=${encodeURIComponent(subdomain)}` : "";
-  const response = await api.get<PortalBootstrap>(`/portal/bootstrap/${query}`);
+  const response = await api.get<PortalBootstrap>(`/api/portal/bootstrap/${query}`);
   return response.data;
 }

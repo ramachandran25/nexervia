@@ -1,13 +1,17 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./app/App";
-import Providers from "./app/providers";
+import axios from "axios";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Providers>
-      <App />
-    </Providers>
-  </React.StrictMode>
-);
+const api = axios.create({
+  baseURL: window.location.origin.replace(":5173", ":8001"),
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export default api;

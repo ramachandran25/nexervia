@@ -1,9 +1,8 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useAuth } from "../core/auth/AuthContext";
+import { useAuth } from "@/core/auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import { detectTenant } from "../core/tenant/tenant";
-import { getPortalBootstrap } from "../services/portal";
 
 interface Props {
   portal: "support" | "businessAdmin";
@@ -11,7 +10,7 @@ interface Props {
 
 
 export default function AppShellLayout({ portal }: Props) {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [moduleSearch, setModuleSearch] = useState("");
@@ -23,15 +22,29 @@ export default function AppShellLayout({ portal }: Props) {
   const tenant = detectTenant();
 
   useEffect(() => {
-    const portalKey = portal === "businessAdmin" ? "admin" : portal;
-    getPortalBootstrap(tenant.subdomain)
-      .then((data) => {
-        setModules(data.portals[portalKey].modules);
-        setPortalLabel(data.branding.company_name);
-      })
-      .catch(() => {
-        setModules([]);
-      });
+    const tenantName =
+      tenant.subdomain.charAt(0).toUpperCase() +
+      tenant.subdomain.slice(1);
+
+    const baseLabel = `${tenantName}`;
+
+    if (portal === "support") {
+      setPortalLabel(`${baseLabel} - Support`);
+      setModules([
+        { name: "Dashboard", path: "/support" },
+        { name: "Tickets", path: "/support/tickets" },
+      ]);
+    }
+
+    if (portal === "businessAdmin") {
+      setPortalLabel(`${baseLabel} - Admin`);
+      setModules([
+        { name: "Dashboard", path: "/admin" },
+        { name: "Users", path: "/admin/users" },
+        { name: "Groups", path: "/admin/groups" },
+        { name: "Workflows", path: "/admin/workflows" },
+      ]);
+    }
   }, [portal, tenant.subdomain]);
 
 
@@ -79,7 +92,7 @@ export default function AppShellLayout({ portal }: Props) {
           />
 
           <span className="text-sm text-gray-600">
-            {user?.name}
+            User
           </span>
 
           <button

@@ -1,19 +1,16 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./useAuth";
 
 interface Props {
-  allowedRoles: string[];
-  children: React.ReactNode;
+  children: JSX.Element;
 }
 
-export default function RoleGuard({ allowedRoles, children }: Props) {
-  const { user } = useAuth();
+export default function RoleGuard({ children }: Props) {
+  const { isAuthenticated } = useAuth();
 
-  if (!user) return <Navigate to="/login" />;
-
-  if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  return children;
 }

@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { detectTenant } from "../core/tenant/tenant";
 import RoleGuard from "../core/auth/RoleGuard";
+import { useAuth } from "../core/auth/useAuth";
 
 /* Layouts */
 import PlatformLayout from "../layouts/PlatformLayout";
@@ -20,121 +21,145 @@ import TicketFormView from "../portals/support/pages/TicketFormView";
 /* Customer */
 import CustomerPortal from "../portals/customer/pages/CustomerPortal";
 
+/* Business Admin Placeholder */
 function Placeholder({ label }: { label: string }) {
   return <div className="text-2xl font-semibold">{label}</div>;
 }
 
 export default function AppRoutes() {
   const tenant = detectTenant();
+  const { isAuthenticated } = useAuth();
 
-  /* =========================
-     PLATFORM ROUTES
-  ========================== */
-  if (tenant.isPlatform) {
-    return (
-      <Routes>
-        <Route element={<PlatformLayout />}>
-          <Route path="/" element={<Placeholder label="Platform Dashboard" />} />
-        </Route>
-      </Routes>
-    );
-  }
-
-  /* =========================
-     TENANT ROUTES
-  ========================== */
   return (
     <Routes>
 
-      {/* PUBLIC LANDING + AUTH */}
+      {/* =====================================================
+         GLOBAL AUTH ROUTES (WORKS ON PLATFORM + TENANT)
+      ====================================================== */}
       <Route element={<PublicTenantLayout />}>
-        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
       </Route>
 
-      {/* =========================
-          CUSTOMER PORTAL
-      ========================== */}
-      <Route element={<CustomerLayout />}>
-        <Route
-          path="/customer"
-          element={
-            <RoleGuard allowedRoles={["customer_user"]}>
-              <CustomerPortal />
-            </RoleGuard>
-          }
-        />
-      </Route>
 
-      {/* =========================
-          SUPPORT PORTAL
-      ========================== */}
-      <Route element={<AppShellLayout portal="support" />}>
+      {/* =====================================================
+         PLATFORM ROUTES
+         platform.localhost
+      ====================================================== */}
+      {tenant.isPlatform && (
+        <Route element={<PlatformLayout />}>
+          <Route path="/" element={<Placeholder label="Platform Dashboard" />} />
+        </Route>
+      )}
 
-        {/* Default redirect */}
-        <Route
-          path="/support"
-          element={<Navigate to="/support/tickets" replace />}
-        />
 
-        <Route
-          path="/support/tickets"
-          element={
-            <RoleGuard allowedRoles={["support_user"]}>
-              <TicketListView />
-            </RoleGuard>
-          }
-        />
+      {/* =====================================================
+         TENANT ROUTES
+         rkp.localhost, tenant1.localhost, etc
+      ====================================================== */}
+      {!tenant.isPlatform && (
+        <>
+          {/* --------------------------
+              PUBLIC LANDING PAGE
+          --------------------------- */}
+          <Route element={<PublicTenantLayout />}>
+            <Route path="/" element={<LandingPage />} />
+          </Route>
 
-        <Route
-          path="/support/tickets/:id"
-          element={
-            <RoleGuard allowedRoles={["support_user"]}>
-              <TicketFormView />
-            </RoleGuard>
-          }
-        />
-      </Route>
 
-      {/* =========================
-          BUSINESS ADMIN PORTAL
-      ========================== */}
-      <Route element={<AppShellLayout portal="businessAdmin" />}>
+          {/* --------------------------
+              CUSTOMER PORTAL
+          --------------------------- */}
+          <Route element={<CustomerLayout />}>
+            <Route
+              path="/customer"
+              element={
+                <RoleGuard>
+                  <CustomerPortal />
+                </RoleGuard>
+              }
+            />
+          </Route>
 
-        {/* Default redirect */}
-        <Route
-          path="/admin"
-          element={<Navigate to="/admin/users" replace />}
-        />
 
-        <Route
-          path="/admin/users"
-          element={
-            <RoleGuard allowedRoles={["tenant_admin"]}>
-              <Placeholder label="Users List View" />
-            </RoleGuard>
-          }
-        />
+          {/* --------------------------
+              SUPPORT PORTAL
+          --------------------------- */}
+          <Route element={<AppShellLayout portal="support" />}>
 
-        <Route
-          path="/admin/groups"
-          element={
-            <RoleGuard allowedRoles={["tenant_admin"]}>
-              <Placeholder label="Groups List View" />
-            </RoleGuard>
-          }
-        />
+            {/* Default redirect */}
+            <Route
+              path="/support"
+              element={<Navigate to="/support/tickets" replace />}
+            />
 
-        <Route
-          path="/admin/workflows"
-          element={
-            <RoleGuard allowedRoles={["tenant_admin"]}>
-              <Placeholder label="Workflows" />
-            </RoleGuard>
-          }
-        />
-      </Route>
+            <Route
+              path="/support/tickets"
+              element={
+                <RoleGuard>
+                  <TicketListView />
+                </RoleGuard>
+              }
+            />
+
+            <Route
+              path="/support/tickets/:id"
+              element={
+                <RoleGuard>
+                  <TicketFormView />
+                </RoleGuard>
+              }
+            />
+
+          </Route>
+
+
+          {/* --------------------------
+              BUSINESS ADMIN PORTAL
+          --------------------------- */}
+          <Route element={<AppShellLayout portal="businessAdmin" />}>
+
+            <Route
+              path="/admin"
+              element={<Navigate to="/admin/users" replace />}
+            />
+
+            <Route
+              path="/admin/users"
+              element={
+                <RoleGuard>
+                  <Placeholder label="Users List View" />
+                </RoleGuard>
+              }
+            />
+
+            <Route
+              path="/admin/groups"
+              element={
+                <RoleGuard>
+                  <Placeholder label="Groups List View" />
+                </RoleGuard>
+              }
+            />
+
+            <Route
+              path="/admin/workflows"
+              element={
+                <RoleGuard>
+                  <Placeholder label="Workflows" />
+                </RoleGuard>
+              }
+            />
+
+          </Route>
+        </>
+      )}
+
+
+      {/* =====================================================
+         FALLBACK ROUTE
+      ====================================================== */}
+      <Route path="*" element={<Navigate to="/" replace />} />
 
     </Routes>
   );
