@@ -1,4 +1,6 @@
 import json
+from copy import deepcopy
+from urllib.parse import urlencode
 
 from django.db import connection
 from rest_framework import status
@@ -11,8 +13,6 @@ from tenants.models import Tenant
 
 
 class DynamicTableView(APIView):
-
-    
 
     def get(self, request, table_name):
 
@@ -55,47 +55,63 @@ class DynamicTableView(APIView):
 
         return Response(results)
 
+
 class PortalBootstrapView(APIView):
 
-    DEFAULT_PORTALS = {
+    PORTAL_SKELETON = {
         "admin": {
             "label": "Business Admin",
             "path": "/admin",
-            "modules": [
-                {"name": "Users", "path": "/admin/users"},
-                {"name": "Groups", "path": "/admin/groups"},
-                {"name": "Workflows", "path": "/admin/workflows"},
-            ],
+            "modules": [],
+            "module_groups": [],
         },
         "support": {
             "label": "Support Portal",
             "path": "/support",
-            "modules": [
-                {"name": "Tickets", "path": "/support/tickets"},
-                {"name": "SLAs", "path": "/support/slas"},
-                {"name": "Knowledge", "path": "/support/kb"},
-                {"name": "Reports", "path": "/support/reports"},
-            ],
+            "modules": [],
+            "module_groups": [],
         },
         "customer": {
             "label": "Customer Portal",
             "path": "/customer",
-            "modules": [
-                {"name": "Overview", "path": "/customer"},
-                {"name": "Tickets", "path": "/customer/tickets"},
-                {"name": "Knowledge", "path": "/customer/kb"},
-            ],
+            "modules": [],
+            "module_groups": [],
         },
         "landing": {
             "label": "Tenant Landing Page",
             "path": "/",
             "modules": [],
+            "module_groups": [],
         },
     }
+
+    @staticmethod
+    def _dedupe_modules(modules):
+        unique_modules = []
+        seen_paths = set()
+
+        for module in modules:
+            path = module.get("path")
+            if not path or path in seen_paths:
+                continue
+            seen_paths.add(path)
+            unique_modules.append(module)
+
+        return unique_modules
+
+    @staticmethod
+    def _build_status_filters(base_path, table_name):
+        return [
+            {"name": "All", "path": f"{base_path}?{urlencode({'table': table_name})}"},
+            {"name": "Open", "path": f"{base_path}?{urlencode({'table': table_name, 'status': 'open'})}"},
+            {"name": "Closed", "path": f"{base_path}?{urlencode({'table': table_name, 'status': 'closed'})}"},
+        ]
 
     def get(self, request):
         host = request.GET.get("subdomain") or request.get_host().split(":")[0].split(".")[0]
         tenant = Tenant.objects.filter(subdomain=host).first()
+
+        portals = deepcopy(self.PORTAL_SKELETON)
 
         payload = {
             "tenant": {
@@ -114,28 +130,124 @@ class PortalBootstrapView(APIView):
                     "secondary_cta": "Explore",
                 },
                 "features": {
-                    "title": "What you can do",
-                    "subtitle": "Core capabilities delivered dynamically from platform metadata.",
-                    "items": [
-                        {"title": "Business Admin", "description": "Manage users, groups and workflows."},
-                        {"title": "Support Portal", "description": "Track tickets and SLAs in real-time."},
-                        {"title": "Customer Portal", "description": "Give customers a self-service workspace."},
-                    ],
+                    "title": "Subscribed modules",
+                    "subtitle": "Your tenant's active platform modules.",
+                    "items": [],
                 },
             },
-            "portals": self.DEFAULT_PORTALS,
+            "portals": portals,
         }
 
         if not tenant:
             return Response(payload)
 
         tenant_modules = (
-            TenantModule.objects.filter(tenant=tenant, active=True)
+            TenantModule.objects.filter(
+                tenant=tenant,
+                active=True,
+                module__active=True,
+            )
             .select_related("module")
-            .values_list("module__name", "module__label")
+            .order_by("module__label")
         )
 
-        for module_name, module_label in tenant_modules:
+        module_groups_by_portal = {
+            "support": {},
+            "admin": {},
+            "customer": {},
+        }
+
+        template_tables = (
+            MetaTable.objects.filter(
+                is_template=True,
+                active=True,
+                module_id__in=tenant_modules.values_list("module_id", flat=True),
+            )
+            .select_related("module")
+            .order_by("module__label", "label")
+        )
+
+        for template in template_tables:
+            if not template.module:
+                continue
+
+            module_key = template.module.name
+            module_label = template.module.label
+
+            payload["portals"]["support"]["modules"].append(
+                {
+                    "name": template.label,
+                    "path": f"/support/tickets?{urlencode({'table': template.name})}",
+                }
+            )
+            payload["portals"]["customer"]["modules"].append(
+                {
+                    "name": template.label,
+                    "path": f"/customer?{urlencode({'table': template.name})}",
+                }
+            )
+
+            support_group = module_groups_by_portal["support"].setdefault(
+                module_key,
+                {
+                    "name": module_label,
+                    "tables": [],
+                }
+            )
+            support_group["tables"].append(
+                {
+                    "name": template.label,
+                    "table": template.name,
+                    "filters": self._build_status_filters("/support/tickets", template.name),
+                }
+            )
+
+            admin_group = module_groups_by_portal["admin"].setdefault(
+                module_key,
+                {
+                    "name": module_label,
+                    "tables": [],
+                }
+            )
+            admin_group["tables"].append(
+                {
+                    "name": template.label,
+                    "table": template.name,
+                    "filters": self._build_status_filters("/admin/users", template.name),
+                }
+            )
+
+        for tenant_module in tenant_modules:
+            module_name = tenant_module.module.name
+            module_label = tenant_module.module.label
+            payload["landing"]["features"]["items"].append(
+                {
+                    "title": module_label,
+                    "description": f"Active module: {module_name}",
+                }
+            )
+
+            customer_group = module_groups_by_portal["customer"].setdefault(
+                module_name,
+                {
+                    "name": module_label,
+                    "tables": [],
+                }
+            )
+            if not customer_group["tables"]:
+                customer_group["tables"].append(
+                    {
+                        "name": module_label,
+                        "table": None,
+                        "filters": [
+                            {
+                                "name": "All",
+                                "path": "/customer",
+                            }
+                        ],
+                    }
+                )
+
             if module_name in payload["portals"]:
                 payload["portals"][module_name]["label"] = module_label
                 continue
@@ -155,15 +267,12 @@ class PortalBootstrapView(APIView):
                 }
             )
 
-        for key in ("admin", "support", "customer"):
+        for portal_key in ("support", "admin", "customer"):
+            groups = list(module_groups_by_portal[portal_key].values())
+            payload["portals"][portal_key]["module_groups"] = groups
+
+        for key in payload["portals"]:
             modules = payload["portals"][key]["modules"]
-            unique_modules = []
-            seen_paths = set()
-            for module in modules:
-                if module["path"] in seen_paths:
-                    continue
-                seen_paths.add(module["path"])
-                unique_modules.append(module)
-            payload["portals"][key]["modules"] = unique_modules
+            payload["portals"][key]["modules"] = self._dedupe_modules(modules)
 
         return Response(payload)

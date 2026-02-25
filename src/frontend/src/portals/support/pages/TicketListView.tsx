@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../services/api";
+import { detectTenant } from "../../../core/tenant/tenant";
+import { getPortalBootstrap } from "../../../services/portal";
 
 interface Ticket {
   id: string;
@@ -9,53 +11,97 @@ interface Ticket {
   priority: string;
 }
 
-const DEFAULT_TABLES = ["support_tickets", "tickets"];
+function getTableFromPath(path: string): string | null {
+  const query = path.split("?")[1];
+  if (!query) {
+    return null;
+  }
 
+  return new URLSearchParams(query).get("table");
+}
 
 export default function TicketListView() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("id");
+  const location = useLocation();
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [availableTables, setAvailableTables] = useState<string[]>([]);
+  const tenant = detectTenant();
+
+  const selectedTable = useMemo(
+    () => new URLSearchParams(location.search).get("table"),
+    [location.search]
+  );
+
+  const selectedStatus = useMemo(
+    () => (new URLSearchParams(location.search).get("status") || "all").toLowerCase(),
+    [location.search]
+  );
+
+  useEffect(() => {
+    const loadSupportModules = async () => {
+      try {
+        const bootstrap = await getPortalBootstrap(tenant.subdomain);
+        const tables = bootstrap.portals.support.modules
+          .map((module) => getTableFromPath(module.path))
+          .filter((tableName): tableName is string => Boolean(tableName));
+        setAvailableTables(Array.from(new Set(tables)));
+      } catch {
+        setAvailableTables([]);
+      }
+    };
+
+    loadSupportModules();
+  }, [tenant.subdomain]);
 
   useEffect(() => {
     const loadTickets = async () => {
-      for (const tableName of DEFAULT_TABLES) {
+      const tablesToTry = selectedTable ? [selectedTable] : availableTables;
+
+      for (const tableName of tablesToTry) {
         try {
           const response = await api.get(`/data/${tableName}/`);
           const mapped = (response.data || []).map((row: any) => ({
             id: String(row.id || row.number || row.sys_id || ""),
             title: row.title || row.short_description || "Untitled",
-            status: row.status || "Open",
-            priority: row.priority || "Medium",
+            status: String(row.status || "Open"),
+            priority: String(row.priority || "Medium"),
           }));
           setTickets(mapped);
           return;
-        } catch (error) {
+        } catch {
           continue;
         }
       }
+
       setTickets([]);
     };
 
     loadTickets();
-  }, []);
+  }, [selectedTable, availableTables]);
 
-  const filtered = tickets
-    .filter((t) =>
-      t.title.toLowerCase().includes(search.toLowerCase())
-    )
-    .sort((a, b) =>
-      sort === "priority"
-        ? a.priority.localeCompare(b.priority)
-        : a.id.localeCompare(b.id)
-    );
+  const filteredTickets = useMemo(() => {
+    if (selectedStatus === "all") {
+      return tickets;
+    }
+
+    if (selectedStatus === "open") {
+      return tickets.filter((ticket) => !["closed", "resolved"].includes(ticket.status.toLowerCase()));
+    }
+
+    if (selectedStatus === "closed") {
+      return tickets.filter((ticket) => ["closed", "resolved"].includes(ticket.status.toLowerCase()));
+    }
+
+    return tickets;
+  }, [tickets, selectedStatus]);
 
   return (
     <div>
-      {/* Table */}
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="mb-3 text-sm text-gray-500">
+        View: <span className="font-medium text-gray-700">{selectedStatus}</span>
+      </div>
 
+      <div className="bg-white rounded-xl shadow overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-gray-600">
             <tr>
@@ -67,10 +113,16 @@ export default function TicketListView() {
           </thead>
 
           <tbody>
-            {filtered.map((ticket) => (
+            {filteredTickets.map((ticket) => (
               <tr
                 key={ticket.id}
-                onClick={() => navigate(`/support/tickets/${ticket.id}`)}
+                onClick={() =>
+                  navigate(
+                    `/support/tickets/${ticket.id}${
+                      selectedTable ? `?table=${selectedTable}&status=${selectedStatus}` : ""
+                    }`
+                  )
+                }
                 className="border-t hover:bg-blue-50 cursor-pointer transition"
               >
                 <td className="px-6 py-3">#{ticket.id}</td>
@@ -79,9 +131,7 @@ export default function TicketListView() {
                 <td className="px-6 py-3">
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
-                      ticket.priority === "High"
-                        ? "bg-red-100 text-red-600"
-                        : "bg-yellow-100 text-yellow-600"
+                      ticket.priority === "High" ? "bg-red-100 text-red-600" : "bg-yellow-100 text-yellow-600"
                     }`}
                   >
                     {ticket.priority}
@@ -91,7 +141,6 @@ export default function TicketListView() {
             ))}
           </tbody>
         </table>
-
       </div>
     </div>
   );
