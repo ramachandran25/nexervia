@@ -30,6 +30,16 @@ export default function AppRoutes() {
   const tenant = detectTenant();
   const { isAuthenticated } = useAuth();
 
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <Routes>
 
