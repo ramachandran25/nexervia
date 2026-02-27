@@ -242,3 +242,5 @@ build/
 
 # OS
 .DS_Store
+
+git_nexervia_sdlc_manager.py
