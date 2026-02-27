@@ -1,4 +1,4 @@
-function FieldRenderer({ field, value, onChange, className }) {
+function FieldRenderer({ field, value, onChange }) {
   switch (field.field_type) {
     case "string":
       return (
@@ -6,7 +6,6 @@ function FieldRenderer({ field, value, onChange, className }) {
           type="text"
           value={value || ""}
           onChange={e => onChange(field.name, e.target.value)}
-          className={className}
         />
       );
 
@@ -15,7 +14,6 @@ function FieldRenderer({ field, value, onChange, className }) {
         <select
           value={value || ""}
           onChange={e => onChange(field.name, e.target.value)}
-          className={className}
         >
           {field.choices.map(c => (
             <option key={c.value} value={c.value}>
