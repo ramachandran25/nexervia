@@ -24,14 +24,39 @@ export default function RequestDetailsModal({ open, record, onClose }: Props) {
             {table ? (
               <div className="mt-1 text-xs text-slate-500">Request type: {table}</div>
             ) : null}
-          </div>
+          </div>  
+          <div className="flex gap-2">
+            
           <button
             type="button"
-            onClick={onClose}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            onClick={() => {
+              const idForUrl = sysId ?? number;
+              const url = new URL(window.location.href);
+
+              url.searchParams.set("view", "requests");
+              if (table) {
+                url.searchParams.set("table", table);
+              }
+              url.searchParams.set("detail", "1");
+              if (idForUrl) {
+                url.searchParams.set("record", String(idForUrl));
+              }
+
+              window.open(url.toString(), "_blank");
+            }}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
           >
-            Close
+            Open in new window
           </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              Close
+            </button>
+          </div>  
         </div>
 
         <div className="max-h-[520px] overflow-y-auto px-6 py-5">

@@ -10,6 +10,8 @@ from rest_framework.views import APIView
 from metaengine.models import MetaTable
 from platformcore.models import TenantModule
 from tenants.models import Tenant
+from metaengine.services.record_service import create_record
+from django.shortcuts import get_object_or_404
 
 
 class DynamicTableView(APIView):
@@ -54,7 +56,32 @@ class DynamicTableView(APIView):
             results.append(record)
 
         return Response(results)
+    
+    def post(self, request, table_name):
+        if not request.user.is_authenticated:
+            return Response({"error": "Unauthorized"}, status=403)
 
+        # Ensure the table is a valid metadata table
+        table = get_object_or_404(MetaTable, name=table_name)
+
+        # Use the metaengine service so sys_id + number + timestamps are handled correctly
+        payload = request.data or {}
+        record = create_record(table_name, payload)  # returns a Model instance
+
+        # Flatten system columns + data into a single response object
+        response_data = {
+            "sys_id": str(record.sys_id),
+            "number": record.number,
+            "created_at": record.created_at,
+            "updated_at": record.updated_at,
+            "created_by": getattr(record, "created_by_id", None),
+            "updated_by": getattr(record, "updated_by_id", None),
+        }
+
+        if isinstance(record.data, dict):
+            response_data.update(record.data or {})
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 class PortalBootstrapView(APIView):
 
