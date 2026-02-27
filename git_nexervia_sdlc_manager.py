@@ -56,21 +56,73 @@ def get_local_branches():
     raw = run("git branch", capture=True).split("\n")
     return [b.replace("*", "").strip() for b in raw]
 
-def select(items, title):
+def get_remote_branches():
+    run("git fetch")
+    raw = run("git branch -r", capture=True)
+
+    branches = []
+    for line in raw.split("\n"):
+        line = line.strip()
+        if line.startswith("origin/") and "HEAD" not in line:
+            branches.append(line.replace("origin/", ""))
+
+    return sorted(branches)
+
+def select(items, title, allow_back=True):
     if not items:
         print("❌ Nothing available.")
         return None
+
     print(f"\n--- {title} ---")
     for i, item in enumerate(items, 1):
         print(f"{i}. {item}")
+
+    if allow_back:
+        print("0. Back")
+
     while True:
         try:
             choice = int(input("Select number: "))
+
+            if allow_back and choice == 0:
+                return "BACK"
+
             if 1 <= choice <= len(items):
-                return items[choice-1]
+                return items[choice - 1]
         except:
             pass
+
         print("❌ Invalid selection.")
+
+def reset_from_remote_branch():
+    current = get_current_branch()
+
+    print(f"\n⚠ Current Branch: {current}")
+    print("This will HARD RESET your current branch to selected remote branch.")
+    print("All local commits and changes will be LOST.\n")
+
+    remote_branches = get_remote_branches()
+
+    selected = select(remote_branches, "Select Remote Branch to Reset From")
+
+    if selected == "BACK":
+        return
+
+    if not selected:
+        return
+
+    print(f"\nYou are about to reset '{current}' to 'origin/{selected}'")
+
+    confirm_text = input("Type YES to confirm destructive reset: ")
+
+    if confirm_text != "YES":
+        print("❌ Reset cancelled.")
+        return
+
+    run(f"git fetch origin {selected}")
+    run(f"git reset --hard origin/{selected}")
+
+    print(f"✅ Branch '{current}' now matches origin/{selected}")
 
 def stash_changes():
     if working_directory_clean():
@@ -102,8 +154,13 @@ def apply_stash():
     if not stashes:
         return
 
-    choice = int(input("Select stash number to apply: "))
-    index = choice - 1
+    print("0. Back")
+    choice = input("Select stash number to apply: ")
+
+    if choice == "0":
+        return
+
+    index = int(choice) - 1
     run(f"git stash apply stash@{{{index}}}")
     print("✅ Stash applied.")
 
@@ -112,8 +169,13 @@ def drop_stash():
     if not stashes:
         return
 
-    choice = int(input("Select stash number to drop: "))
-    index = choice - 1
+    print("0. Back")
+    choice = input("Select stash number to drop: ")
+
+    if choice == "0":
+        return
+
+    index = int(choice) - 1
     run(f"git stash drop stash@{{{index}}}")
     print("🗑 Stash dropped.")
 
@@ -366,19 +428,68 @@ def start_hotfix():
 def commit_push():
     branch = get_current_branch()
 
+    print(f"\nCurrent Branch: {branch}")
+
     if branch in PROTECTED_BRANCHES:
         print("❌ Direct commits not allowed on protected branches.")
         return
 
-    if not confirm("Commit changes?"):
+    staged = run("git diff --cached --name-status", capture=True)
+
+    if not staged:
+        print("\n❌ No staged changes found.")
+
+        print("""
+Options:
+1. Stage all changes (git add .)
+2. Show uncommitted changes
+0. Back
+""")
+
+        choice = input("Select option: ")
+
+        if choice == "1":
+            run("git add .")
+            print("✅ All changes staged.")
+        elif choice == "2":
+            show_uncommitted_changes()
         return
 
-    msg = input("Commit message: ")
-    run("git add .")
-    run(f'git commit -m "{msg}"')
+    print("\n📦 Staged Changes:")
+    print("----------------------------------")
+    print(staged)
+    print("----------------------------------")
+
+    print("\n0. Back")
+    confirm_input = input("Proceed with commit? (yes/no/0): ")
+
+    if confirm_input == "0":
+        return
+
+    if confirm_input.lower() != "yes":
+        print("❌ Commit cancelled.")
+        return
+
+    if branch == "development":
+        print("\n⚠ You are committing directly to 'development'.")
+        dev_confirm = input("Type DEV to confirm: ")
+        if dev_confirm != "DEV":
+            print("❌ Development commit aborted.")
+            return
+
+    message = input("Commit message: ")
+
+    if not message.strip():
+        print("❌ Commit message cannot be empty.")
+        return
+
+    run(f'git commit -m "{message}"')
 
     if confirm("Push to remote?"):
         run(f"git push origin {branch}")
+        print("✅ Commit pushed successfully.")
+    else:
+        print("✅ Commit created locally.")
 
 # ===============================
 # Promotion
@@ -543,8 +654,9 @@ def menu():
 12. Drop Stash
 13. Revert Last Merge (development/Testing)
 14. Undo Last Promotion
-15. View SDLC Lifecycle Notes
-16. Exit
+15. Reset Current Branch from Remote Branch
+16. View SDLC Lifecycle Notes
+0. Exit
 ===============================
 """)
 
@@ -564,8 +676,9 @@ def menu():
         elif choice == "12": drop_stash()
         elif choice == "13": revert_last_merge()
         elif choice == "14": undo_last_promotion()
-        elif choice == "15": show_lifecycle_notes()
-        elif choice == "16": startup_flow()
+        elif choice == "15": reset_from_remote_branch()
+        elif choice == "16": show_lifecycle_notes()
+        elif choice == "0": sys.exit()
 
 
         else: print("Invalid option.")
