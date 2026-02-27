@@ -251,7 +251,7 @@ export default function CustomerPortal() {
                   navigate("/customer?view=catalog");
                 }
               }}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-black"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue"
             >
               New request
             </button>
@@ -525,7 +525,7 @@ export default function CustomerPortal() {
                 <button
                   type="button"
                   onClick={() => openCreateForTable(activeTable)}
-                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-black disabled:opacity-50"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue disabled:opacity-50"
                   disabled={!activeTable}
                 >
                   New request
