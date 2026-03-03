@@ -1,0 +1,616 @@
+.
+├── api
+│   ├── admin.py
+│   ├── apps.py
+│   ├── auth_serializers.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── auth
+│   ├── admin.py
+│   ├── api_views.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── checkouts
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── commando
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── management
+│   │   ├── commands
+│   │   │   ├── db_branch.py
+│   │   │   ├── drop_schema.py
+│   │   │   ├── hello_world.py
+│   │   │   ├── __init__.py
+│   │   │   ├── init_schema.py
+│   │   │   ├── migrate_dynamic_db.py
+│   │   │   ├── migrate_schema_basic.py
+│   │   │   ├── migrate_schema.py
+│   │   │   └── vendor_pull.py
+│   │   └── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── customers
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_customer_init_email_customer_init_email_confirmed.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── dashboard
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── enterprises
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── frontend
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   ├── tenants
+│   │   │   └── rkp
+│   │   │       ├── config.json
+│   │   │       ├── hero.png
+│   │   │       └── logo.png
+│   │   └── vite.svg
+│   ├── README.md
+│   ├── src
+│   │   ├── app
+│   │   │   ├── App.tsx
+│   │   │   ├── providers.tsx
+│   │   │   └── routes.tsx
+│   │   ├── context
+│   │   │   ├── PortalContext.tsx
+│   │   │   └── ThemeContext.tsx
+│   │   ├── core
+│   │   │   ├── api
+│   │   │   │   └── axios.ts
+│   │   │   ├── auth
+│   │   │   │   ├── AuthContext.tsx
+│   │   │   │   ├── authService.ts
+│   │   │   │   ├── RoleGuard.tsx
+│   │   │   │   └── useAuth.ts
+│   │   │   ├── components
+│   │   │   │   ├── DynamicForm.jsx
+│   │   │   │   ├── DynamicList.tsx
+│   │   │   │   └── FieldRenderer.jsx
+│   │   │   ├── config
+│   │   │   │   ├── portalConfig.ts
+│   │   │   │   └── tableConfig.ts
+│   │   │   ├── tenant
+│   │   │   │   └── tenant.ts
+│   │   │   ├── theme
+│   │   │   └── utils
+│   │   ├── engine
+│   │   │   ├── form
+│   │   │   ├── layout
+│   │   │   └── list
+│   │   ├── hooks
+│   │   ├── index.css
+│   │   ├── layouts
+│   │   │   ├── AppShellLayout.tsx
+│   │   │   ├── CustomerLayout.tsx
+│   │   │   ├── MinimalLayout.tsx
+│   │   │   ├── PlatformLayout.tsx
+│   │   │   ├── PublicTenantLayout.tsx
+│   │   │   ├── SupportLayout.tsx
+│   │   │   └── TenantLayout.tsx
+│   │   ├── main.tsx
+│   │   ├── portals
+│   │   │   ├── auth
+│   │   │   ├── business
+│   │   │   │   ├── Dashboard.tsx
+│   │   │   │   ├── MetaTables.tsx
+│   │   │   │   └── Tenants.tsx
+│   │   │   ├── customer
+│   │   │   │   ├── components
+│   │   │   │   │   ├── CreateRequestModal.tsx
+│   │   │   │   │   ├── CustomerTopbar.tsx
+│   │   │   │   │   └── RequestDetailsModal.tsx
+│   │   │   │   └── pages
+│   │   │   │       └── CustomerPortal.tsx
+│   │   │   ├── platform
+│   │   │   │   └── Dashboard.tsx
+│   │   │   ├── support
+│   │   │   │   ├── components
+│   │   │   │   │   ├── ContentNavbar.tsx
+│   │   │   │   │   ├── SupportSidebar.tsx
+│   │   │   │   │   └── SupportTopNavbar.tsx
+│   │   │   │   └── pages
+│   │   │   │       ├── SupportPortal.tsx
+│   │   │   │       ├── TicketFormView.tsx
+│   │   │   │       └── TicketListView.tsx
+│   │   │   └── tenant-landing
+│   │   │       ├── components
+│   │   │       │   ├── FeaturesSection.tsx
+│   │   │       │   ├── Footer.tsx
+│   │   │       │   ├── HeroSection.tsx
+│   │   │       │   ├── Navbar.tsx
+│   │   │       │   └── SectionRenderer.tsx
+│   │   │       ├── data
+│   │   │       └── pages
+│   │   │           ├── LandingPage.tsx
+│   │   │           ├── LoginPage.tsx
+│   │   │           └── SignupPage.tsx
+│   │   ├── services
+│   │   │   ├── api.ts
+│   │   │   ├── portal.ts
+│   │   │   └── user.ts
+│   │   ├── shared
+│   │   │   ├── components
+│   │   │   │   ├── AppShell.tsx
+│   │   │   │   ├── ConfirmModal.tsx
+│   │   │   │   ├── engine
+│   │   │   │   │   ├── DynamicForm.tsx
+│   │   │   │   │   ├── DynamicList.tsx
+│   │   │   │   │   ├── FieldRenderer.jsx
+│   │   │   │   │   └── hooks
+│   │   │   │   ├── ErrorBoundary.tsx
+│   │   │   │   ├── Header.tsx
+│   │   │   │   ├── layout
+│   │   │   │   │   ├── Sidebar.tsx
+│   │   │   │   │   ├── ThemeToggle.tsx
+│   │   │   │   │   └── Topbar.tsx
+│   │   │   │   ├── PageHeader.tsx
+│   │   │   │   ├── ProtectedRoute.tsx
+│   │   │   │   ├── Sidebar.tsx
+│   │   │   │   └── ui
+│   │   │   └── ui
+│   │   ├── support
+│   │   │   ├── hooks
+│   │   │   │   └── useServexData.ts
+│   │   │   ├── RecordFormView.tsx
+│   │   │   └── TableListView.tsx
+│   │   └── types
+│   │       ├── auth.ts
+│   │       └── support.ts
+│   ├── tailwind.config.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── frontend_backup
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   ├── tenants
+│   │   │   └── rkp
+│   │   │       ├── config.json
+│   │   │       ├── hero.png
+│   │   │       └── logo.png
+│   │   └── vite.svg
+│   ├── README.md
+│   ├── src
+│   │   ├── app
+│   │   │   ├── App.tsx
+│   │   │   ├── providers.tsx
+│   │   │   └── routes.tsx
+│   │   ├── context
+│   │   │   ├── PortalContext.tsx
+│   │   │   └── ThemeContext.tsx
+│   │   ├── core
+│   │   │   ├── api
+│   │   │   │   └── axios.ts
+│   │   │   ├── auth
+│   │   │   │   ├── AuthContext.tsx
+│   │   │   │   ├── authService.ts
+│   │   │   │   ├── RoleGuard.tsx
+│   │   │   │   └── useAuth.ts
+│   │   │   ├── components
+│   │   │   │   ├── DynamicForm.jsx
+│   │   │   │   ├── DynamicList.tsx
+│   │   │   │   └── FieldRenderer.jsx
+│   │   │   ├── config
+│   │   │   │   └── portalConfig.ts
+│   │   │   └── tenant
+│   │   │       └── tenant.ts
+│   │   ├── engine
+│   │   │   ├── form
+│   │   │   ├── layout
+│   │   │   └── list
+│   │   ├── hooks
+│   │   ├── index.css
+│   │   ├── layouts
+│   │   │   ├── AppShellLayout.tsx
+│   │   │   ├── CustomerLayout.tsx
+│   │   │   ├── MinimalLayout.tsx
+│   │   │   ├── PlatformLayout.tsx
+│   │   │   ├── PublicTenantLayout.tsx
+│   │   │   ├── SupportLayout.tsx
+│   │   │   └── TenantLayout.tsx
+│   │   ├── main.tsx
+│   │   ├── portals
+│   │   │   ├── auth
+│   │   │   ├── business
+│   │   │   │   ├── Dashboard.tsx
+│   │   │   │   ├── MetaTables.tsx
+│   │   │   │   └── Tenants.tsx
+│   │   │   ├── customer
+│   │   │   │   ├── components
+│   │   │   │   │   └── CustomerTopbar.tsx
+│   │   │   │   └── pages
+│   │   │   │       └── CustomerPortal.tsx
+│   │   │   ├── platform
+│   │   │   │   └── Dashboard.tsx
+│   │   │   ├── support
+│   │   │   │   ├── components
+│   │   │   │   │   ├── ContentNavbar.tsx
+│   │   │   │   │   ├── SupportSidebar.tsx
+│   │   │   │   │   └── SupportTopNavbar.tsx
+│   │   │   │   └── pages
+│   │   │   │       ├── SupportPortal.tsx
+│   │   │   │       ├── TicketFormView.tsx
+│   │   │   │       └── TicketListView.tsx
+│   │   │   └── tenant-landing
+│   │   │       ├── components
+│   │   │       │   ├── FeaturesSection.tsx
+│   │   │       │   ├── Footer.tsx
+│   │   │       │   ├── HeroSection.tsx
+│   │   │       │   ├── Navbar.tsx
+│   │   │       │   └── SectionRenderer.tsx
+│   │   │       ├── data
+│   │   │       └── pages
+│   │   │           ├── LandingPage.tsx
+│   │   │           ├── LoginPage.tsx
+│   │   │           └── SignupPage.tsx
+│   │   ├── services
+│   │   │   ├── api.ts
+│   │   │   ├── portal.ts
+│   │   │   └── user.ts
+│   │   ├── shared
+│   │   │   ├── components
+│   │   │   │   ├── AppShell.tsx
+│   │   │   │   ├── ConfirmModal.tsx
+│   │   │   │   ├── engine
+│   │   │   │   │   ├── DynamicForm.jsx
+│   │   │   │   │   ├── DynamicList.tsx
+│   │   │   │   │   ├── FieldRenderer.jsx
+│   │   │   │   │   └── hooks
+│   │   │   │   ├── ErrorBoundary.tsx
+│   │   │   │   ├── Header.tsx
+│   │   │   │   ├── layout
+│   │   │   │   │   ├── Sidebar.tsx
+│   │   │   │   │   ├── ThemeToggle.tsx
+│   │   │   │   │   └── Topbar.tsx
+│   │   │   │   ├── PageHeader.tsx
+│   │   │   │   ├── ProtectedRoute.tsx
+│   │   │   │   ├── Sidebar.tsx
+│   │   │   │   └── ui
+│   │   │   └── ui
+│   │   └── types
+│   │       └── auth.ts
+│   ├── tailwind.config.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── helpers
+│   ├── billing.py
+│   ├── date_utils.py
+│   ├── db
+│   │   ├── context
+│   │   │   ├── __init__.py
+│   │   │   └── managers.py
+│   │   ├── engine
+│   │   │   ├── base.py
+│   │   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   ├── schemas.py
+│   │   ├── statements.py
+│   │   └── validators.py
+│   ├── downloader.py
+│   ├── __init__.py
+│   ├── middleware
+│   │   ├── __init__.py
+│   │   └── schemas.py
+│   ├── neonctl
+│   │   ├── clients.py
+│   │   └── __init__.py
+│   ├── numbers.py
+│   └── security
+│       ├── blocked_lists.py
+│       └── __init__.py
+├── landing
+│   ├── admin.py
+│   ├── apps.py
+│   ├── content
+│   │   ├── default.json
+│   │   ├── demo.json
+│   │   └── rkp.json
+│   ├── content.py
+│   ├── context_processors.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── manage.py
+├── metaengine
+│   ├── admin.py
+│   ├── apps.py
+│   ├── engine.py
+│   ├── form_builder.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_rename_unique_metafield_read_only_and_more.py
+│   │   ├── 0003_delete_dynamicrecord.py
+│   │   ├── 0004_metatable_is_template_metatable_module.py
+│   │   ├── 0005_metafield_is_core.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── physical_models.py
+│   ├── schema_engine.py
+│   ├── services
+│   │   ├── __init__.py
+│   │   ├── record_service.py
+│   │   ├── sequence_service.py
+│   │   └── table_service.py
+│   ├── templatetags
+│   │   ├── __init__.py
+│   │   └── meta_filters.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── utils.py
+│   └── views.py
+├── nexervia
+│   ├── asgi.py
+│   ├── hosts.py
+│   ├── __init__.py
+│   ├── installed.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── views.py
+│   └── wsgi.py
+├── nexervia_structure.txt
+├── platformcore
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_remove_module_description_tenantsubscription.py
+│   │   ├── 0003_rename_tenantsubscription_tenantmodule.py
+│   │   ├── 0004_rename_created_at_tenantmodule_activated_at_and_more.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── services
+│   │   └── provisioning.py
+│   ├── tests.py
+│   └── views.py
+├── profiles
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── requirements
+│   ├── dev.in
+│   └── prod.in
+├── schemadata
+│   └── migrations
+├── staticfiles
+│   ├── base_tailwind
+│   │   └── tailwind-input.css
+│   ├── css
+│   │   └── style.css
+│   ├── images
+│   │   ├── flowbite-phone-mockup.png
+│   │   └── tenants
+│   │       ├── demo
+│   │       └── rkp
+│   │           └── hero.png
+│   ├── js
+│   │   └── react-cta.js
+│   ├── theme
+│   │   └── saas-theme.min.css
+│   └── vendors
+│       ├── flowbite.min.css
+│       ├── flowbite.min.js
+│       ├── flowbite.min.js.map
+│       ├── saas-theme.min.css
+│       ├── sweetalert2-11.26.18
+│       │   └── package
+│       │       ├── LICENSE
+│       │       ├── package.json
+│       │       ├── README.md
+│       │       ├── src
+│       │       │   ├── buttons-handlers.js
+│       │       │   ├── constants.js
+│       │       │   ├── globalState.js
+│       │       │   ├── instanceMethods
+│       │       │   ├── instanceMethods.js
+│       │       │   ├── keydown-handler.js
+│       │       │   ├── popup-click-handler.js
+│       │       │   ├── privateMethods.js
+│       │       │   ├── privateProps.js
+│       │       │   ├── staticMethods
+│       │       │   ├── staticMethods.js
+│       │       │   ├── sweetalert2.js
+│       │       │   ├── sweetalert2.scss
+│       │       │   ├── SweetAlert.js
+│       │       │   ├── types.js
+│       │       │   └── utils
+│       │       ├── sweetalert2.d.ts
+│       │       └── themes
+│       │           ├── bootstrap-4.css
+│       │           ├── bootstrap-5.css
+│       │           ├── borderless.css
+│       │           ├── bulma.css
+│       │           ├── embed-iframe.css
+│       │           ├── material-ui.css
+│       │           └── minimal.css
+│       └── sweetalert2.min.js
+├── subscriptions
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── management
+│   │   ├── commands
+│   │   │   ├── __init__.py
+│   │   │   ├── sync_permissions.py
+│   │   │   └── sync_user_subs.py
+│   │   └── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_subscription_options.py
+│   │   ├── 0003_subscription_groups.py
+│   │   ├── 0004_subscription_permissions.py
+│   │   ├── 0005_alter_subscription_permissions.py
+│   │   ├── 0006_subscription_active.py
+│   │   ├── 0007_usersubscription.py
+│   │   ├── 0008_subscription_stripe_id.py
+│   │   ├── 0009_subscriptionprice.py
+│   │   ├── 0010_subscriptionprice_featured_subscriptionprice_order.py
+│   │   ├── 0011_subscriptionprice_timestamp_and_more.py
+│   │   ├── 0012_alter_subscriptionprice_options.py
+│   │   ├── 0013_alter_subscription_options_subscription_featured_and_more.py
+│   │   ├── 0014_alter_subscriptionprice_options.py
+│   │   ├── 0015_subscription_features.py
+│   │   ├── 0016_subscription_subtitle.py
+│   │   ├── 0017_usersubscription_stripe_id.py
+│   │   ├── 0018_usersubscription_user_cancelled.py
+│   │   ├── 0019_usersubscription_current_period_end_and_more.py
+│   │   ├── 0020_usersubscription_status.py
+│   │   ├── 0021_usersubscription_cancel_at_period_end.py
+│   │   ├── 0022_usersubscription_timestamp_usersubscription_updated.py
+│   │   ├── 0023_subscription_module_subscription_provisioned.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── timing.md
+│   ├── utils.py
+│   └── views.py
+├── templates
+│   ├── account
+│   │   ├── base.html
+│   │   └── logout.html
+│   ├── allauth
+│   │   └── layouts
+│   │       └── base.html
+│   ├── auth
+│   │   ├── login.html
+│   │   └── register.html
+│   ├── base
+│   │   ├── css.html
+│   │   ├── js.html
+│   │   └── messages.html
+│   ├── base.html
+│   ├── checkout
+│   │   └── success.html
+│   ├── dashboard
+│   │   ├── base.html
+│   │   ├── main.html
+│   │   ├── nav.html
+│   │   └── sidebar.html
+│   ├── landing
+│   │   ├── contact.html
+│   │   ├── features.html
+│   │   ├── hero.html
+│   │   ├── main.html
+│   │   ├── pricing.html
+│   │   ├── proof.html
+│   │   └── services.html
+│   ├── metaengine
+│   │   ├── detail.html
+│   │   ├── form.html
+│   │   ├── list.html
+│   │   └── success.html
+│   ├── nav
+│   │   └── navbar.html
+│   ├── profiles
+│   │   ├── detail.html
+│   │   └── list.html
+│   ├── protected
+│   │   ├── entry.html
+│   │   ├── user-only.html
+│   │   └── view.html
+│   ├── snippets
+│   │   └── welcome-user-msg.html
+│   ├── subscriptions
+│   │   ├── pricing.html
+│   │   ├── snippets
+│   │   │   └── pricing-card.html
+│   │   ├── user_cancel_view.html
+│   │   └── user_detail_view.html
+│   └── tenants
+│       ├── detail.html
+│       ├── list.html
+│       └── new-user.html
+├── tenants
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_tenant_subdomain.py
+│   │   ├── 0003_tenant_tenant_name.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tasks.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── utils.py
+│   └── views.py
+└── visits
+    ├── admin.py
+    ├── apps.py
+    ├── __init__.py
+    ├── migrations
+    │   ├── 0001_initial.py
+    │   ├── 0002_pagevisit_user.py
+    │   └── __init__.py
+    ├── models.py
+    ├── tests.py
+    └── views.py
+
+170 directories, 444 files
